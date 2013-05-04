@@ -8,13 +8,8 @@ class LogException extends Exception
     public function __construct($str, $key = "ERROR")
     {
         $this->yesterday = date("Y-m-") . (date("d") - 1);
-        $this->logWr($str, $key);
-    }
-
-    protected function logWr($str, $key)
-    {
         $fileName = $this->path . $key . ".log";
-        $archiveName = $this->yesterday . "_" . $fileName;
+        $archiveName = $this->yesterday . "_" . $fileName . ".zip";
         if ($this->archiveNeeded($archiveName))
             $this->archiveLog($fileName, $archiveName);
         if ($fp = $this->openLog($fileName)) {
