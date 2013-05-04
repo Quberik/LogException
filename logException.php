@@ -5,17 +5,17 @@ class LogException extends Exception
     protected $path = '';
     protected $yesterday;
 
-    public function __construct($str, $key = "ERROR")
+    public function __construct($message, $key = "ERROR")
     {
+        $this->message=$message;
         $this->path = dirname(__FILE__) . "/";
         $this->yesterday = date("Y-m-") . (date("d") - 1);
         $fileName = $this->path . $key . ".log";
-        echo $fileName;
         $archiveName = $this->path . $this->yesterday . "_" . $key . ".zip";
         if ($this->archiveNeeded($archiveName))
             $this->archiveLog($fileName, $archiveName);
         if ($fp = $this->openLog($fileName)) {
-            $outStr = date("d.m.y H:i") . ":\t" . $this->getFile() . ":\t" . $str . "\n";
+            $outStr = date("d.m.y H:i") . ":\t" . $this->getFile() . ":\t" . $message . "\n";
             $this->writeLog($fp, $outStr);
             $this->closeLog($fp);
         }
