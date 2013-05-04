@@ -7,13 +7,15 @@ class LogException extends Exception
 
     public function __construct($str, $key = "ERROR")
     {
+        $this->path = dirname(__FILE__) . "/";
         $this->yesterday = date("Y-m-") . (date("d") - 1);
         $fileName = $this->path . $key . ".log";
-        $archiveName = $this->yesterday . "_" . $fileName . ".zip";
+        echo $fileName;
+        $archiveName = $this->path . $this->yesterday . "_" . $key . ".zip";
         if ($this->archiveNeeded($archiveName))
             $this->archiveLog($fileName, $archiveName);
         if ($fp = $this->openLog($fileName)) {
-            $outStr = date("d.m.y H:i") . ":\t" . $str . "\n";
+            $outStr = date("d.m.y H:i") . ":\t" . $this->getFile() . ":\t" . $str . "\n";
             $this->writeLog($fp, $outStr);
             $this->closeLog($fp);
         }
@@ -23,7 +25,7 @@ class LogException extends Exception
     {
         $fp = fopen($fileName, $param);
         if (!$fp) {
-            echo "Log opening error" . $this->path . "<br>";
+            echo "Log opening error. File: " . $fileName . ", mode: " . $param . "<br>";
             return false;
         } else
             return $fp;
