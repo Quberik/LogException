@@ -4,28 +4,36 @@ class LogException extends Exception
 {
     protected $path = '';
     protected $yesterday;
+    protected $fileName;
+    protected $archiveName;
+    protected $message = '';
 
-    public function __construct($message, $key = "ERROR")
+    public function __construct($str='', $key = "ERROR")
     {
-        $this->message=$message;
-        $this->path = dirname(__FILE__) . "/";
-        $this->yesterday = date("Y-m-") . (date("d") - 1);
-        $fileName = $this->path . $key . ".log";
-        $archiveName = $this->path . $this->yesterday . "_" . $key . ".zip";
-        if ($this->archiveNeeded($archiveName))
-            $this->archiveLog($fileName, $archiveName);
-        if ($fp = $this->openLog($fileName)) {
-            $outStr = date("d.m.y H:i") . ":\t" . $this->getFile() . ":\t" . $message . "\n";
+        $this->initVars($str, $key);
+        if ($this->archiveNeeded())
+            $this->archiveLog();
+        if ($fp = $this->openLog()) {
+            $outStr = date("d.m.y H:i") . ":\t" . $this->getFile() . " at line " . $this->getLine() . ":\t" . $this->message . "\n";
             $this->writeLog($fp, $outStr);
             $this->closeLog($fp);
         }
     }
 
-    protected function openLog($fileName, $param = "a+")
+    protected function initVars($str, $key)
     {
-        $fp = fopen($fileName, $param);
+        $this->message .= $str;
+        $this->path = dirname(dirname(__FILE__)) . "/text/log/";
+        $this->yesterday = date("Y-m-") . (date("d") - 1);
+        $this->fileName = $this->path . $key . ".log";
+        $this->archiveName = $this->path . $this->yesterday . "_" . $key . ".zip";
+    }
+
+    protected function openLog($param = "a+")
+    {
+        $fp = fopen($this->fileName, $param);
         if (!$fp) {
-            echo "Log opening error. File: " . $fileName . ", mode: " . $param . "<br>";
+            echo "Log opening error. File: " . $this->fileName . ", mode: " . $param . "<br>";
             return false;
         } else
             return $fp;
@@ -46,24 +54,23 @@ class LogException extends Exception
             echo "Log writing error";
     }
 
-    protected function archiveLog($fileName, $archiveName)
+    protected function archiveLog()
     {
-        $archive = new PclZip($archiveName);
-        $archive->create($fileName);
-        if ($fp = $this->openLog($fileName, "w")) {
+        $archive = new PclZip($this->archiveName);
+        $archive->create($this->fileName);
+        if ($fp = $this->openLog("w")) {
             $this->writeLog($fp, '');
             $this->closeLog($fp);
         }
     }
 
-    protected function archiveNeeded($archiveName)
+    protected function archiveNeeded()
     {
-        if (file_exists($archiveName)) {
+        if (file_exists($this->archiveName)) {
             return false;
         } else return true;
     }
 
 }
-
 
 ?>
