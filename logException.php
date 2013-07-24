@@ -73,5 +73,3 @@ class LogException extends Exception
     }
 
 }
-
-?>
