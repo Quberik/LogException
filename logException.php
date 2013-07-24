@@ -2,11 +2,12 @@
 
 class LogException extends Exception
 {
-    protected $path = '';
-    protected $yesterday;
-    protected $fileName;
-    protected $archiveName;
-    protected $message = '';
+    protected
+        $path = '',
+        $yesterday,
+        $fileName,
+        $archiveName,
+        $message = '';
 
     public function __construct($str='', $key = "ERROR")
     {
