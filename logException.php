@@ -24,7 +24,7 @@ class LogException extends Exception
     protected function initVars($str, $key)
     {
         $this->message .= $str;
-        $this->path = dirname(dirname(__FILE__)) . "/text/log/";
+        $this->path = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . "log" . DIRECTORY_SEPARATOR;
         $this->yesterday = date("Y-m-") . (date("d") - 1);
         $this->fileName = $this->path . $key . ".log";
         $this->archiveName = $this->path . $this->yesterday . "_" . $key . ".zip";
