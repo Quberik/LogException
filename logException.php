@@ -57,7 +57,7 @@ class LogException extends Exception
     protected function archiveLog()
     {
         $archive = new PclZip($this->archiveName);
-        $archive->create($this->fileName, PCLZIP_OPT_REMOVE_PATH, $this->path);
+        $archive->create($this->fileName, PCLZIP_OPT_REMOVE_ALL_PATH);
         if ($fp = $this->openLog("w")) {
             $this->writeLog($fp, '');
             $this->closeLog($fp);
