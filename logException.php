@@ -15,8 +15,10 @@ class LogException extends Exception
         if ($this->archiveNeeded())
             $this->archiveLog();
         if ($fp = $this->openLog()) {
-            $outStr = date("d.m.y H:i") . ":\t" . $this->getFile() . " at line " . $this->getLine() . ":\t" . $this->message . "\n";
-            $this->writeLog($fp, $outStr);
+            $stringTmp = $this->getFile() . " at line " . $this->getLine() . ":\t" . $this->message . "\n";
+            $outStr = date("d.m.y H:i") . ":\t" . $stringTmp;
+            if ($this->existLineError($stringTmp))
+                $this->writeLog($fp, $outStr);
             $this->closeLog($fp);
         }
     }
@@ -38,7 +40,15 @@ class LogException extends Exception
             return false;
         } else
             return $fp;
-
+    }
+    
+    protected function existLineError($stringTmp)
+    {
+        $lines = file ($this->fileName);
+        $countLines = count($lines);
+        $stringFromFile = substr($lines[$countLines - 1], 16);
+        if ($stringFromFile == $stringTmp && $countLines > 0) return false;
+        return true;
     }
 
     protected function closeLog($fp)
